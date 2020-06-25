@@ -13,7 +13,6 @@ $logged = [
     'public',
     'home',
     'console',
-    'auth',
     'account',
     'teams.read',
     'teams.write',
@@ -25,14 +24,30 @@ $logged = [
     'projects.write',
     'locale.read',
     'avatars.read',
-    'health.read',
 ];
 
 $admins = [
+    'teams.read',
+    'teams.write',
+    'documents.read',
+    'documents.write',
+    'files.read',
+    'files.write',
     'users.read',
     'users.write',
     'collections.read',
     'collections.write',
+    'platforms.read',
+    'platforms.write',
+    'keys.read',
+    'keys.write',
+    'tasks.read',
+    'tasks.write',
+    'webhooks.read',
+    'webhooks.write',
+    'locale.read',
+    'avatars.read',
+    'health.read',
 ];
 
 return [
@@ -42,31 +57,30 @@ return [
             'public',
             'home',
             'console',
-            'auth',
+            'documents.read',
             'files.read',
             'locale.read',
             'avatars.read',
-            'health.read',
         ],
     ],
     ROLE_MEMBER => [
         'label' => 'Member',
-        'scopes' => array_merge($logged, []),
+        'scopes' => \array_merge($logged, []),
     ],
     ROLE_ADMIN => [
         'label' => 'Admin',
-        'scopes' => array_merge($logged, $admins, []),
+        'scopes' => \array_merge($admins, []),
     ],
     ROLE_DEVELOPER => [
         'label' => 'Developer',
-        'scopes' => array_merge($logged, $admins, []),
+        'scopes' => \array_merge($admins, []),
     ],
     ROLE_OWNER => [
         'label' => 'Owner',
-        'scopes' => array_merge($logged, $admins, []),
+        'scopes' => \array_merge($logged, $admins, []),
     ],
     ROLE_APP => [
         'label' => 'Application',
-        'scopes' => ['public'],
+        'scopes' => ['health.read'],
     ],
 ];

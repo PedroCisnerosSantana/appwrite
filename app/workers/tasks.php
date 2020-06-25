@@ -2,11 +2,12 @@
 
 require_once __DIR__.'/../init.php';
 
-use Database\Database;
-use Database\Validator\Authorization;
+use Utopia\Config\Config;
+use Appwrite\Database\Database;
+use Appwrite\Database\Validator\Authorization;
 use Cron\CronExpression;
 
-cli_set_process_title('Tasks V1 Worker');
+\cli_set_process_title('Tasks V1 Worker');
 
 echo APP_NAME.' tasks worker v1 has started';
 
@@ -23,7 +24,7 @@ class TasksV1
 
     public function perform()
     {
-        global $consoleDB, $register, $version;
+        global $consoleDB, $request;
 
         /*
          * 1. Get Original Task
@@ -38,12 +39,15 @@ class TasksV1
          *      If error count bigger than allowed change status to pause
          */
 
-        $taskId = (isset($this->args['$uid'])) ? $this->args['$uid'] : null;
+        $taskId = (isset($this->args['$id'])) ? $this->args['$id'] : null;
         $updated = (isset($this->args['updated'])) ? $this->args['updated'] : null;
         $next = (isset($this->args['next'])) ? $this->args['next'] : null;
-        $delay = time() - $next;
+        $delay = \time() - $next;
         $errors = [];
         $timeout = 60 * 5; // 5 minutes
+        $errorLimit = 5;
+        $logLimit = 5;
+        $alert = '';
 
         if (empty($taskId)) {
             throw new Exception('Missing task $id');
@@ -55,7 +59,7 @@ class TasksV1
 
         Authorization::enable();
 
-        if (is_null($task->getUid()) || Database::SYSTEM_COLLECTION_TASKS !== $task->getCollection()) {
+        if (\is_null($task->getId()) || Database::SYSTEM_COLLECTION_TASKS !== $task->getCollection()) {
             throw new Exception('Task Not Found');
         }
 
@@ -71,66 +75,69 @@ class TasksV1
 
         $cron = CronExpression::factory($task->getAttribute('schedule'));
         $next = (int) $cron->getNextRunDate()->format('U');
-        $headers = (is_array($task->getAttribute('httpHeaders', []))) ? $task->getAttribute('httpHeaders', []) : [];
+        $headers = (\is_array($task->getAttribute('httpHeaders', []))) ? $task->getAttribute('httpHeaders', []) : [];
 
         $task
             ->setAttribute('next', $next)
-            ->setAttribute('previous', time())
+            ->setAttribute('previous', \time())
         ;
 
-        ResqueScheduler::enqueueAt($next, 'v1-tasks', 'TasksV1', $task->getArrayCopy());
+        ResqueScheduler::enqueueAt($next, 'v1-tasks', 'TasksV1', $task->getArrayCopy());  // Async task rescheduale
 
-        $startTime = microtime(true);
+        $startTime = \microtime(true);
 
         // Execute Task
 
-        $ch = curl_init($task->getAttribute('httpUrl'));
+        $ch = \curl_init($task->getAttribute('httpUrl'));
 
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $task->getAttribute('httpMethod'));
-        curl_setopt($ch, CURLOPT_POSTFIELDS, '');
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_USERAGENT, sprintf(APP_USERAGENT, $version));
-        curl_setopt(
+        \curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $task->getAttribute('httpMethod'));
+        \curl_setopt($ch, CURLOPT_POSTFIELDS, '');
+        \curl_setopt($ch, CURLOPT_HEADER, 0);
+        \curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        \curl_setopt($ch, CURLOPT_USERAGENT, \sprintf(APP_USERAGENT,
+            Config::getParam('version'),
+            $request->getServer('_APP_SYSTEM_SECURITY_EMAIL_ADDRESS', APP_EMAIL_SECURITY)
+        ));
+        \curl_setopt(
             $ch,
             CURLOPT_HTTPHEADER,
-            array_merge($headers, [
-                'X-'.APP_NAME.'-Task-UID: '.$task->getAttribute('$uid', ''),
+            \array_merge($headers, [
+                'X-'.APP_NAME.'-Task-ID: '.$task->getAttribute('$id', ''),
                 'X-'.APP_NAME.'-Task-Name: '.$task->getAttribute('name', ''),
             ])
         );
-        curl_setopt($ch, CURLOPT_HEADER, true);  // we want headers
-        curl_setopt($ch, CURLOPT_NOBODY, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+        \curl_setopt($ch, CURLOPT_HEADER, true);  // we want headers
+        \curl_setopt($ch, CURLOPT_NOBODY, true);
+        \curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
 
         if (!$task->getAttribute('security', true)) {
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            \curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            \curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         }
 
         $httpUser = $task->getAttribute('httpUser');
         $httpPass = $task->getAttribute('httpPass');
 
         if (!empty($httpUser) && !empty($httpPass)) {
-            curl_setopt($ch, CURLOPT_USERPWD, "$httpUser:$httpPass");
-            curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+            \curl_setopt($ch, CURLOPT_USERPWD, "$httpUser:$httpPass");
+            \curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         }
 
-        $response = curl_exec($ch);
+        $response = \curl_exec($ch);
 
         if (false === $response) {
-            $errors[] = curl_error($ch).'Failed to execute task';
+            $errors[] = \curl_error($ch).'Failed to execute task';
         }
 
-        $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $codeFamily = mb_substr($code, 0, 1);
-        $headersSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $headers = substr($response, 0, $headersSize);
-        $body = substr($response, $headersSize);
+        $code = \curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $codeFamily = \mb_substr($code, 0, 1);
+        $headersSize = \curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $headers = \substr($response, 0, $headersSize);
+        $body = \substr($response, $headersSize);
 
-        curl_close($ch);
+        \curl_close($ch);
 
-        $totalTime = round(microtime(true) - $startTime, 2);
+        $totalTime = \round(\microtime(true) - $startTime, 2);
 
         switch ($codeFamily) {
             case '2':
@@ -147,19 +154,19 @@ class TasksV1
         } else {
             $task
                 ->setAttribute('failures', $task->getAttribute('failures', 0) + 1)
-                ->setAttribute('status', ($task->getAttribute('failures') >= 5) ? 'pause' : 'play')
+                ->setAttribute('status', ($task->getAttribute('failures') >= $errorLimit) ? 'pause' : 'play')
             ;
 
-            $alert = 'Task "'.$task->getAttribute('name').'" failed to execute with the following errors: '.implode($errors, "\n");
+            $alert = 'Task "'.$task->getAttribute('name').'" failed to execute with the following errors: '.\implode("\n", $errors);
         }
 
-        $log = json_decode($task->getAttribute('log', '{}'), true);
+        $log = \json_decode($task->getAttribute('log', '{}'), true);
 
-        if (count($log) >= 5) {
-            array_pop($log);
+        if (\count($log) >= $logLimit) {
+            \array_pop($log);
         }
 
-        array_unshift($log, [
+        \array_unshift($log, [
             'code' => $code,
             'duration' => $totalTime,
             'delay' => $delay,
@@ -169,7 +176,7 @@ class TasksV1
         ]);
 
         $task
-            ->setAttribute('log', json_encode($log))
+            ->setAttribute('log', \json_encode($log))
             ->setAttribute('duration', $totalTime)
             ->setAttribute('delay', $delay)
         ;
@@ -181,6 +188,10 @@ class TasksV1
         }
 
         Authorization::enable();
+
+        // ResqueScheduler::enqueueAt($next, 'v1-tasks', 'TasksV1', $task->getArrayCopy());  // Sync task rescheduale
+
+        // Send alert if needed (use SMTP as default for now)
 
         return true;
     }

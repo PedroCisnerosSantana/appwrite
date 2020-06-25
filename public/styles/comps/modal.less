@@ -1,9 +1,5 @@
 
 .modal-open, .modal-open body {
-  //margin: 0;
-  //height: 100%;
-  //overflow: hidden;
-
   .modal-bg {
     position: fixed;
     content: '';
@@ -24,10 +20,11 @@
   overflow: auto;
   display: none;
   position: fixed;
+  transform: translate3d(0,0,0);
   width: 100%;
   max-height: 90%;
   max-width: 640px;
-  background: #ffffff;
+  background: var(--config-color-background-fade);
   z-index: 1000;
   box-shadow: 0 0 4px rgba(0, 0, 0, .25);
   padding: 30px;
@@ -37,9 +34,23 @@
   border-radius: 10px;
   box-sizing: border-box;
   text-align: @config-start;
+  white-space: initial;
+  line-height: normal;
 
   @media @phones, @tablets {
     width: ~"calc(100% - 20px)";
+  }
+
+  &.full {
+    max-width: none;
+    max-height: none;
+    height: 100%;
+    border-radius: 0;
+    padding: 80px 120px;
+
+    h1 {
+      font-weight: 700;
+    }
   }
 
   &.padding-small {
@@ -47,13 +58,13 @@
   }
 
   &.height-tiny {
-    form {
+    > form {
       height: 100px;
     }
   }
 
   &.height-small {
-    form {
+    > form {
       height: 220px;
     }
   }
@@ -96,37 +107,47 @@
     line-height: 35px;
   }
 
-  form, .main {
+  > form, .main {
     position: relative;
-    border-top: solid 1px #e7e7e7;
+    border-top: solid 1px var(--config-border-color);
     padding: 30px 30px 0 30px;
     margin: 0 -30px;
+
+    &.strip {
+      border: none;
+      padding: 0;
+      margin: 0;
+    }
   }
 
   .separator {
     margin: 20px -30px;
   }
 
-  /*iframe {
-    width: ~"calc(100% - 70px)";
-    height: ~"calc(100% - 180px)";
-    border: none;
-    background: #323639;
-    opacity: 1;
-    position: absolute;
-    top: 85px;
-    bottom: 0;
-    right: 35px;
-    left: 35px;
-  }*/
+  .bullets {
+    .func-padding-start(40px);
+    
+    li {
+      .margin-bottom;
+      &:before {
+        position: absolute;
+      }
+    }
+  }
 
   .info {
     margin: 0 -30px;
     padding: 20px 30px;
-    background: #f5fbff;
-    color: #3b5d73;
-    border-top: solid 1px #eaf2f7;
-    border-bottom: solid 1px #eaf2f7;
+    background: var(--config-modal-note-background);
+    color: var(--config-modal-note-color);
+    border-top: solid 1px var(--config-modal-note-border);
+    border-bottom: solid 1px var(--config-modal-note-border);
+  }
+
+  .ide.strech {
+    box-shadow: none;
+    border-radius: 0;
+    margin: 0 -30px;
   }
 
   button.close {
@@ -135,8 +156,38 @@
     line-height: 30px;
     padding: 0;
     margin: 0;
-    background: #1b1b1b;
-    color: #ffffff;
+    background: var(--config-color-normal);
+    color: var(--config-color-background-fade);
     border-radius: 50%;
+  }
+
+  .paging {
+    form {
+      padding: 0;
+      margin: 0;
+      border-top: none;
+    }
+  }
+
+  &.sticky-footer {
+    form {
+      footer {
+        margin: -30px;
+      }
+    }
+
+    footer {
+      position: sticky;
+      bottom: -30px;
+      background: var(--config-color-background-fade-super);
+      height: 50px;
+      z-index: 1;
+      padding: 30px;
+      box-shadow: 0 0 1px rgba(0,0,0,.15);
+
+      form {
+        display: inline-block;
+      }
+    }
   }
 }

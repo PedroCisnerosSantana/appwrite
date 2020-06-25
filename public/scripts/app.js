@@ -28,50 +28,6 @@ window.ls.container
     }
   })
   .add({
-    selector: "data-cookie-policy",
-    controller: function(element, alerts, cookie, env) {
-      if (!cookie.get("cookie-alert")) {
-        let text = element.dataset["cookiePolicy"] || "";
-
-        alerts.add(
-          {
-            text: text,
-            class: "cookie-alert",
-            link: env.HOME + "/policy/cookies",
-            callback: function() {
-              cookie.set("cookie-alert", "true", 365 * 10); // 10 years
-            }
-          },
-          0
-        );
-      }
-    }
-  })
-  .add({
-    selector: "data-ls-ui-alerts",
-    controller: function(element, window, view) {
-      window.document.addEventListener(
-        "alerted",
-        function() {
-          view.render(element);
-        },
-        true
-      );
-    }
-  })
-  .add({
-    selector: "data-ls-ui-alerts-delete",
-    controller: function(document, element, alerts, expression) {
-      let message = expression.parse(element.dataset["message"]);
-
-      let remove = function() {
-        alerts.remove(message);
-      };
-
-      element.addEventListener("click", remove);
-    }
-  })
-  .add({
     selector: "data-forms-headers",
     controller: function(element) {
       let key = document.createElement("input");
@@ -160,40 +116,6 @@ window.ls.container
     }
   })
   .add({
-    selector: "data-code-example",
-    controller: function(window, document, element, cookie) {
-      let prefix = element.dataset["codeExample"] || "unknown";
-
-      element.addEventListener("change", function() {
-        select(element.value);
-      });
-
-      let select = function(value) {
-        for (let i = 0; i < element.length; i++) {
-          document.body.classList.remove(
-            prefix + "-" + element.options[i].value
-          );
-        }
-
-        document.body.classList.add(prefix + "-" + value);
-
-        cookie.set("language-" + prefix, value, 365);
-
-        document.dispatchEvent(new CustomEvent("updated-language-" + prefix));
-      };
-
-      document.addEventListener("updated-language-" + prefix, function() {
-        element.value = cookie.get("language-" + prefix);
-      });
-
-      let def = cookie.get("language-" + prefix) || element.options[0].value;
-
-      select(def);
-
-      element.value = def;
-    }
-  })
-  .add({
     selector: "data-ls-ui-chart",
     controller: function(element, container, date, document) {
       let child = document.createElement("canvas");
@@ -261,15 +183,6 @@ window.ls.container
           "d F Y",
           stats["requests"]["data"][i].date
         );
-      }
-
-      let chart = container.get("chart");
-
-      if (chart) {
-        //if(JSON.stringify(chart.data.datasets[0].data) === JSON.stringify(config.data.datasets[0].data) && element.dataset['canvas']) {
-        //    return;
-        //}
-        //chart.destroy();
       }
 
       element.innerHTML = "";

@@ -102,7 +102,30 @@ window.ls.router
     project: true
   })
   .add("/console/database/collection", {
-    template: "/console/database/collection?version=" + APP_ENV.VERSION,
+    template: function(window) {
+      return window.location.pathname + window.location.search + '&version=' + APP_ENV.VERSION;
+    },
+    scope: "console",
+    project: true
+  })
+  .add("/console/database/collection/:tab", {
+    template: function(window) {
+      return window.location.pathname + window.location.search + '&version=' + APP_ENV.VERSION;
+    },
+    scope: "console",
+    project: true
+  })
+  .add("/console/database/document", {
+    template: function(window) {
+      return window.location.pathname + window.location.search + '&version=' + APP_ENV.VERSION;
+    },
+    scope: "console",
+    project: true
+  })
+  .add("/console/database/document/:tab", {
+    template: function(window) {
+      return window.location.pathname + window.location.search + '&version=' + APP_ENV.VERSION;
+    },
     scope: "console",
     project: true
   })
@@ -121,13 +144,23 @@ window.ls.router
     scope: "console",
     project: true
   })
-  .add("/console/users/view", {
-    template: "/console/users/view?version=" + APP_ENV.VERSION,
+  .add("/console/users/user", {
+    template: "/console/users/user?version=" + APP_ENV.VERSION,
     scope: "console",
     project: true
   })
-  .add("/console/users/view/:tab", {
-    template: "/console/users/view?version=" + APP_ENV.VERSION,
+  .add("/console/users/user/:tab", {
+    template: "/console/users/user?version=" + APP_ENV.VERSION,
+    scope: "console",
+    project: true
+  })
+  .add("/console/users/teams/team", {
+    template: "/console/users/teams/team?version=" + APP_ENV.VERSION,
+    scope: "console",
+    project: true
+  })
+  .add("/console/users/teams/team/:tab", {
+    template: "/console/users/teams/team?version=" + APP_ENV.VERSION,
     scope: "console",
     project: true
   })

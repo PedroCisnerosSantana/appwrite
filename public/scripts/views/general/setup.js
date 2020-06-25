@@ -1,7 +1,7 @@
 (function(window) {
   window.ls.container.get("view").add({
     selector: "data-setup",
-    controller: function(element, console, form, alerts) {
+    controller: function(element, console, form, alerts, router) {
       element.addEventListener("submit", function(event) {
         event.preventDefault();
 
@@ -12,9 +12,9 @@
         formData["name"] =
           formData["name"] || (element.dataset["defaultName"] || "");
 
-        console.teams.createTeam(formData["name"] || "").then(
+        console.teams.create(formData["name"] || "").then(
           function(data) {
-            let team = data["$uid"];
+            let team = data["$id"];
 
             formData = JSON.parse(
               JSON.stringify(formData).replace(
@@ -23,11 +23,11 @@
               )
             ); //convert to JSON string
 
-            console.projects.createProject(formData["name"], team).then(
+            console.projects.create(formData["name"], team).then(
               function(project) {
-                //router.change();
                 alerts.remove(loaderId);
-                window.location.href = "/console/home?project=" + project["$uid"];
+                //router.change("/console/home?project=" + project["$id"]);
+                window.location.href = "/console/home?project=" + project["$id"];
               },
               function() {
                 throw new Error("Failed to setup project");

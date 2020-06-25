@@ -1,39 +1,18 @@
-@config-width: 910px;
-@config-width-xxl: 1100px;
-@config-width-xl: 910px;
-@config-width-large: 700px;
-@config-width-medium: 550px;
-@config-width-small: 320px;
-@config-color-link: #1e849e;
-@config-color-background: #eceff1;
-@config-color-placeholder: #868686;
-@config-color-normal: #40404c;
-@config-color-focus: #f02e65;
-@config-color-focus-fade: #fff2f6;
-@config-color-focus-glow: #fce5ec;
-@config-color-focus-dark: #c52653;
-@config-color-fade: #818181;
-@config-color-border: #e6e6e6;
-@config-color-fade-light: #e2e2e2;
-@config-color-fade-super: #f1f3f5;
-@config-color-danger: #f53d3d;
-@config-color-success: #1bbf61;
-@config-color-warning: #ffed4d;
-@config-radius: 10px;
-
 @watch: ~"only screen and (max-width: 260px)";
 @phones: ~"only screen and (max-width: 550px)";
-@tablets: ~"only screen and (min-width: 551px) and (max-width: 970px)";
-@desktops: ~"only screen and (min-width: 971px) and (max-width: 1300px)";
-@big-screens: ~"only screen and (min-width: 970px)";
-@dark: ~"(prefers-color-scheme: dark)";
+@tablets: ~"only screen and (min-width: 551px) and (max-width: 1198px)";
+//@desktops: ~"only screen and (min-width: 1199) and (max-width: 1300px)";
+@desktops: ~"only screen and (min-width: 1199px)";
 
 img[src=""] {
   visibility: hidden;
   display: inline-block;
 }
 
+@import "themes";
+@import "fonts";
 @import "functions";
+@import "responsive";
 @import "typography";
 @import "tabels";
 @import "grid";
@@ -51,6 +30,7 @@ img[src=""] {
 @import "comps/footer";
 @import "comps/loader";
 @import "comps/modal";
+@import "comps/scroll";
 @import "comps/tabs";
 @import "dependencies/prism";
 
@@ -62,11 +42,8 @@ html {
 
 body {
   margin: 0;
-  background: #f6f7f8 no-repeat fixed;
-}
-
-main {
-  min-height: 100%;
+  background: var(--config-console-background) no-repeat fixed;
+  min-width: 300px;
 }
 
 ul {
@@ -77,22 +54,4 @@ ul {
     margin: 0;
     list-style: none;
   }
-}
-
-.force-left {
-  direction: ltr;
-  text-align: left;
-}
-
-.force-right {
-  direction: rtl;
-  text-align: right;
-}
-
-.pull-left {
-  float: left;
-}
-
-.pull-right {
-  float: right;
 }

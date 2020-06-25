@@ -125,9 +125,11 @@ This will allow the Appwrite community to have sufficient discussion about the n
 
 This is also important for the Appwrite lead developers to be able to give technical input and different emphasize regarding the feature design and architecture.
 
-## Setup
+## Setup From Source
 
-To set up a working **development** environment, just fork the project git repository and install the backend and frontend dependencies using the proper package manager and create run the docker-compose stack.
+To set up a working **development environment**, just fork the project git repository and install the backend and frontend dependencies using the proper package manager and create run the docker-compose stack.
+
+> If you just want to install Appwrite for day-to-day usage and not as a code maintainer use this [installation guide](https://github.com/appwrite/appwrite#installation).
 
 Please note that these instructions are for setting a functional dev environment. If you want to set up an Appwrite instance to integrate into your app, you should probably try and install Appwrite by using the instructions in the [getting started guide](https://appwrite.io/docs/getting-started-for-web) or in the main [README](README.md) file.
 
@@ -135,10 +137,6 @@ Please note that these instructions are for setting a functional dev environment
 git clone git@github.com:[YOUR_FORK_HERE]/appwrite.git
 
 cd appwrite
-
-composer update --ignore-platform-reqs --optimize-autoloader --no-plugins --no-scripts
-
-npm install
 
 docker-compose up -d
 ```
@@ -160,12 +158,23 @@ Before running the command, make sure you have proper write permissions to the A
 To run tests manually, run phpunit from your command line:
 
 ```bash
-vendor/bin/phpunit --configuration phpunit.xml
+docker exec appwrite test
+```
+
+## Code Maintenance  
+
+We use some automation tools to help us keep a healthy code base.
+
+Improve PHP exeution time by using [fully-qualified function calls](https://veewee.github.io/blog/optimizing-php-performance-by-fq-function-calls/):
+
+```bash
+php-cs-fixer fix src/ --rules=native_function_invocation --allow-risky=yes
 ```
 
 ## Tutorials
 
 From time to time, our team will add tutorials that will help contributors find their way in the Appwrite source code. Below is a list of currently available tutorials:
 
-* [Adding Support for a New OAuth Provider](./docs/tutorials/add-oauth-provider.md)
-* [Appwrite Environment Variables](./docs/tutorials/add-oauth-provider.md)
+* [Adding Support for a New OAuth2 Provider](./docs/tutorials/add-oauth2-provider.md)
+* [Appwrite Environment Variables](./docs/tutorials/environment-variables.md)
+* [Running in Production](./docs/tutorials/running-in-production.md)

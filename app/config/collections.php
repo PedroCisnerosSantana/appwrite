@@ -1,12 +1,15 @@
 <?php
 
-global $providers, $request;
+global $request;
 
-use Database\Database;
+use Utopia\Config\Config;
+use Appwrite\Database\Database;
+
+$providers = Config::getParam('providers');
 
 $collections = [
     'console' => [
-        '$uid' => 'console',
+        '$id' => 'console',
         '$collection' => 'projects',
         '$permissions' => ['read' => ['*']],
         'name' => 'Appwrite',
@@ -20,43 +23,25 @@ $collections = [
                 '$collection' => Database::SYSTEM_COLLECTION_PLATFORMS,
                 'name' => 'Production',
                 'type' => 'web',
-                'url' => 'https://appwrite.io',
+                'hostname' => 'appwrite.io',
             ],
             [
                 '$collection' => Database::SYSTEM_COLLECTION_PLATFORMS,
-                'name' => 'Development (SSL)',
+                'name' => 'Development',
                 'type' => 'web',
-                'url' => 'https://appwrite.test',
+                'hostname' => 'appwrite.test',
             ],
             [
                 '$collection' => Database::SYSTEM_COLLECTION_PLATFORMS,
-                'name' => 'Development (Non-SSL)',
+                'name' => 'Localhost',
                 'type' => 'web',
-                'url' => 'http://appwrite.test',
+                'hostname' => 'localhost',
             ],
             [
                 '$collection' => Database::SYSTEM_COLLECTION_PLATFORMS,
-                'name' => 'Localhost (SSL)',
+                'name' => 'Current Host',
                 'type' => 'web',
-                'url' => 'https://localhost',
-            ],
-            [
-                '$collection' => Database::SYSTEM_COLLECTION_PLATFORMS,
-                'name' => 'Localhost (Non-SSL)',
-                'type' => 'web',
-                'url' => 'http://localhost',
-            ],
-            [
-                '$collection' => Database::SYSTEM_COLLECTION_PLATFORMS,
-                'name' => 'Current Host (SSL)',
-                'type' => 'web',
-                'url' => 'https://'.$request->getServer('HTTP_HOST'),
-            ],
-            [
-                '$collection' => Database::SYSTEM_COLLECTION_PLATFORMS,
-                'name' => 'Current Host (Non-SSL)',
-                'type' => 'web',
-                'url' => 'http://'.$request->getServer('HTTP_HOST'),
+                'hostname' => \parse_url('https://'.$request->getServer('HTTP_HOST'), PHP_URL_HOST),
             ],
         ],
         'legalName' => '',
@@ -65,13 +50,13 @@ $collections = [
         'legalCity' => '',
         'legalAddress' => '',
         'legalTaxId' => '',
-        'authWhitelistEmails' => (!empty($request->getServer('_APP_CONSOLE_WHITELIST_EMAILS', null))) ? explode(',', $request->getServer('_APP_CONSOLE_WHITELIST_EMAILS', null)) : [],
-        'authWhitelistIPs' => (!empty($request->getServer('_APP_CONSOLE_WHITELIST_IPS', null))) ? explode(',', $request->getServer('_APP_CONSOLE_WHITELIST_IPS', null)) : [],
-        'authWhitelistDomains' => (!empty($request->getServer('_APP_CONSOLE_WHITELIST_DOMAINS', null))) ? explode(',', $request->getServer('_APP_CONSOLE_WHITELIST_DOMAINS', null)) : [],
+        'authWhitelistEmails' => (!empty($request->getServer('_APP_CONSOLE_WHITELIST_EMAILS', null))) ? \explode(',', $request->getServer('_APP_CONSOLE_WHITELIST_EMAILS', null)) : [],
+        'authWhitelistIPs' => (!empty($request->getServer('_APP_CONSOLE_WHITELIST_IPS', null))) ? \explode(',', $request->getServer('_APP_CONSOLE_WHITELIST_IPS', null)) : [],
+        'authWhitelistDomains' => (!empty($request->getServer('_APP_CONSOLE_WHITELIST_DOMAINS', null))) ? \explode(',', $request->getServer('_APP_CONSOLE_WHITELIST_DOMAINS', null)) : [],
     ],
     Database::SYSTEM_COLLECTION_COLLECTIONS => [
         '$collection' => Database::SYSTEM_COLLECTION_COLLECTIONS,
-        '$uid' => Database::SYSTEM_COLLECTION_COLLECTIONS,
+        '$id' => Database::SYSTEM_COLLECTION_COLLECTIONS,
         '$permissions' => ['read' => ['*']],
         'name' => 'Collections',
         'structure' => true,
@@ -126,7 +111,7 @@ $collections = [
     ],
     Database::SYSTEM_COLLECTION_RULES => [
         '$collection' => Database::SYSTEM_COLLECTION_COLLECTIONS,
-        '$uid' => Database::SYSTEM_COLLECTION_RULES,
+        '$id' => Database::SYSTEM_COLLECTION_RULES,
         '$permissions' => ['read' => ['*']],
         'name' => 'Collections Rule',
         'structure' => true,
@@ -198,7 +183,7 @@ $collections = [
     ],
     Database::SYSTEM_COLLECTION_USERS => [
         '$collection' => Database::SYSTEM_COLLECTION_COLLECTIONS,
-        '$uid' => Database::SYSTEM_COLLECTION_USERS,
+        '$id' => Database::SYSTEM_COLLECTION_USERS,
         '$permissions' => ['read' => ['*']],
         'name' => 'User',
         'structure' => true,
@@ -268,8 +253,8 @@ $collections = [
             ],
             [
                 '$collection' => Database::SYSTEM_COLLECTION_RULES,
-                'label' => 'Confirmation Status',
-                'key' => 'confirm',
+                'label' => 'Email Verification Status',
+                'key' => 'emailVerification',
                 'type' => 'boolean',
                 'default' => '',
                 'required' => true,
@@ -308,7 +293,7 @@ $collections = [
     ],
     Database::SYSTEM_COLLECTION_TOKENS => [
         '$collection' => Database::SYSTEM_COLLECTION_COLLECTIONS,
-        '$uid' => Database::SYSTEM_COLLECTION_TOKENS,
+        '$id' => Database::SYSTEM_COLLECTION_TOKENS,
         '$permissions' => ['read' => ['*']],
         'name' => 'Token',
         'structure' => true,
@@ -362,7 +347,7 @@ $collections = [
     ],
     Database::SYSTEM_COLLECTION_MEMBERSHIPS => [
         '$collection' => Database::SYSTEM_COLLECTION_COLLECTIONS,
-        '$uid' => Database::SYSTEM_COLLECTION_MEMBERSHIPS,
+        '$id' => Database::SYSTEM_COLLECTION_MEMBERSHIPS,
         '$permissions' => ['read' => ['*']],
         'name' => 'Membership',
         'structure' => true,
@@ -434,7 +419,7 @@ $collections = [
     ],
     Database::SYSTEM_COLLECTION_TEAMS => [
         '$collection' => Database::SYSTEM_COLLECTION_COLLECTIONS,
-        '$uid' => Database::SYSTEM_COLLECTION_TEAMS,
+        '$id' => Database::SYSTEM_COLLECTION_TEAMS,
         '$permissions' => ['read' => ['*']],
         'name' => 'Team',
         'structure' => true,
@@ -470,7 +455,7 @@ $collections = [
     ],
     Database::SYSTEM_COLLECTION_PROJECTS => [
         '$collection' => Database::SYSTEM_COLLECTION_COLLECTIONS,
-        '$uid' => Database::SYSTEM_COLLECTION_PROJECTS,
+        '$id' => Database::SYSTEM_COLLECTION_PROJECTS,
         '$permissions' => ['read' => ['*']],
         'name' => 'Project',
         'structure' => true,
@@ -606,11 +591,21 @@ $collections = [
                 'array' => true,
                 'list' => [Database::SYSTEM_COLLECTION_PLATFORMS],
             ],
+            [
+                '$collection' => Database::SYSTEM_COLLECTION_RULES,
+                'label' => 'Domains',
+                'key' => 'domains',
+                'type' => 'document',
+                'default' => [],
+                'required' => false,
+                'array' => true,
+                'list' => [Database::SYSTEM_COLLECTION_DOMAINS],
+            ],
         ],
     ],
     Database::SYSTEM_COLLECTION_WEBHOOKS => [
         '$collection' => Database::SYSTEM_COLLECTION_COLLECTIONS,
-        '$uid' => Database::SYSTEM_COLLECTION_WEBHOOKS,
+        '$id' => Database::SYSTEM_COLLECTION_WEBHOOKS,
         '$permissions' => ['read' => ['*']],
         'name' => 'Webhook',
         'structure' => true,
@@ -673,7 +668,7 @@ $collections = [
     ],
     Database::SYSTEM_COLLECTION_KEYS => [
         '$collection' => Database::SYSTEM_COLLECTION_COLLECTIONS,
-        '$uid' => Database::SYSTEM_COLLECTION_KEYS,
+        '$id' => Database::SYSTEM_COLLECTION_KEYS,
         '$permissions' => ['read' => ['*']],
         'name' => 'Key',
         'structure' => true,
@@ -708,7 +703,7 @@ $collections = [
     ],
     Database::SYSTEM_COLLECTION_TASKS => [
         '$collection' => Database::SYSTEM_COLLECTION_COLLECTIONS,
-        '$uid' => Database::SYSTEM_COLLECTION_TASKS,
+        '$id' => Database::SYSTEM_COLLECTION_TASKS,
         '$permissions' => ['read' => ['*']],
         'name' => 'Task',
         'structure' => true,
@@ -861,7 +856,7 @@ $collections = [
     ],
     Database::SYSTEM_COLLECTION_PLATFORMS => [
         '$collection' => Database::SYSTEM_COLLECTION_COLLECTIONS,
-        '$uid' => Database::SYSTEM_COLLECTION_PLATFORMS,
+        '$id' => Database::SYSTEM_COLLECTION_PLATFORMS,
         '$permissions' => ['read' => ['*']],
         'name' => 'Platform',
         'structure' => true,
@@ -922,8 +917,125 @@ $collections = [
             ],
             [
                 '$collection' => Database::SYSTEM_COLLECTION_RULES,
-                'label' => 'url',
-                'key' => 'url',
+                'label' => 'Hostname',
+                'key' => 'hostname',
+                'type' => 'text',
+                'default' => '',
+                'required' => false,
+                'array' => false,
+            ],
+        ],
+    ],
+    Database::SYSTEM_COLLECTION_DOMAINS => [
+        '$collection' => Database::SYSTEM_COLLECTION_COLLECTIONS,
+        '$id' => Database::SYSTEM_COLLECTION_DOMAINS,
+        '$permissions' => ['read' => ['*']],
+        'name' => 'Domains',
+        'structure' => true,
+        'rules' => [
+            [
+                '$collection' => Database::SYSTEM_COLLECTION_RULES,
+                'label' => 'Domain',
+                'key' => 'domain',
+                'type' => 'text',
+                'default' => null,
+                'required' => true,
+                'array' => false,
+            ],
+            [
+                '$collection' => Database::SYSTEM_COLLECTION_RULES,
+                'label' => 'Updated',
+                'key' => 'updated',
+                'type' => 'numeric',
+                'default' => 0,
+                'required' => false,
+                'array' => false,
+            ],
+            [
+                '$collection' => Database::SYSTEM_COLLECTION_RULES,
+                'label' => 'Top Level Domain',
+                'key' => 'tld',
+                'type' => 'text',
+                'default' => '',
+                'required' => false,
+                'array' => false,
+            ],
+            [
+                '$collection' => Database::SYSTEM_COLLECTION_RULES,
+                'label' => 'Registerable Domain',
+                'key' => 'registerable',
+                'type' => 'text',
+                'default' => '',
+                'required' => false,
+                'array' => false,
+            ],
+            [
+                '$collection' => Database::SYSTEM_COLLECTION_RULES,
+                'label' => 'Verification',
+                'key' => 'verification',
+                'type' => 'boolean',
+                'default' => false,
+                'required' => true,
+                'array' => false,
+            ],
+            [
+                '$collection' => Database::SYSTEM_COLLECTION_RULES,
+                'label' => 'Certificate ID',
+                'key' => 'certificateId',
+                'type' => 'key',
+                'default' => '',
+                'required' => false,
+                'array' => false,
+            ],
+        ],
+    ],
+    Database::SYSTEM_COLLECTION_CERTIFICATES => [
+        '$collection' => Database::SYSTEM_COLLECTION_COLLECTIONS,
+        '$id' => Database::SYSTEM_COLLECTION_CERTIFICATES,
+        '$permissions' => ['read' => ['*']],
+        'name' => 'Certificates',
+        'structure' => true,
+        'rules' => [
+            [
+                '$collection' => Database::SYSTEM_COLLECTION_RULES,
+                'label' => 'Domain',
+                'key' => 'domain',
+                'type' => 'text',
+                'default' => null,
+                'required' => true,
+                'array' => false,
+            ],
+            [
+                '$collection' => Database::SYSTEM_COLLECTION_RULES,
+                'label' => 'Issue Date',
+                'key' => 'issueDate',
+                'type' => 'numeric',
+                'default' => 0,
+                'required' => false,
+                'array' => false,
+            ],
+            [
+                '$collection' => Database::SYSTEM_COLLECTION_RULES,
+                'label' => 'Renew Date',
+                'key' => 'renewDate',
+                'type' => 'numeric',
+                'default' => 0,
+                'required' => false,
+                'array' => false,
+            ],
+            [
+                '$collection' => Database::SYSTEM_COLLECTION_RULES,
+                'label' => 'Attempts',
+                'key' => 'attempts',
+                'type' => 'numeric',
+                'default' => 0,
+                'required' => false,
+                'array' => false,
+            ],
+            [
+                '$collection' => Database::SYSTEM_COLLECTION_RULES,
+                'label' => 'Log',
+                'key' => 'log',
                 'type' => 'text',
                 'default' => '',
                 'required' => false,
@@ -933,7 +1045,7 @@ $collections = [
     ],
     Database::SYSTEM_COLLECTION_FILES => [
         '$collection' => Database::SYSTEM_COLLECTION_COLLECTIONS,
-        '$uid' => Database::SYSTEM_COLLECTION_FILES,
+        '$id' => Database::SYSTEM_COLLECTION_FILES,
         '$permissions' => ['read' => ['*']],
         'name' => 'File',
         'structure' => true,
@@ -1078,17 +1190,17 @@ $collections = [
 ];
 
 /*
- * Add enabled OAuth providers to default data rules
+ * Add enabled OAuth2 providers to default data rules
  */
-foreach ($providers as $key => $provider) {
+foreach ($providers as $index => $provider) {
     if (!$provider['enabled']) {
         continue;
     }
 
     $collections[Database::SYSTEM_COLLECTION_PROJECTS]['rules'][] = [
         '$collection' => Database::SYSTEM_COLLECTION_RULES,
-        'label' => 'OAuth '.ucfirst($key).' ID',
-        'key' => 'usersOauth'.ucfirst($key).'Appid',
+        'label' => 'OAuth2 '.\ucfirst($index).' ID',
+        'key' => 'usersOauth2'.\ucfirst($index).'Appid',
         'type' => 'text',
         'default' => '',
         'required' => false,
@@ -1097,8 +1209,8 @@ foreach ($providers as $key => $provider) {
 
     $collections[Database::SYSTEM_COLLECTION_PROJECTS]['rules'][] = [
         '$collection' => Database::SYSTEM_COLLECTION_RULES,
-        'label' => 'OAuth '.ucfirst($key).' Secret',
-        'key' => 'usersOauth'.ucfirst($key).'Secret',
+        'label' => 'OAuth2 '.\ucfirst($index).' Secret',
+        'key' => 'usersOauth2'.\ucfirst($index).'Secret',
         'type' => 'text',
         'default' => '',
         'required' => false,
@@ -1107,8 +1219,8 @@ foreach ($providers as $key => $provider) {
 
     $collections[Database::SYSTEM_COLLECTION_USERS]['rules'][] = [
         '$collection' => Database::SYSTEM_COLLECTION_RULES,
-        'label' => 'OAuth '.ucfirst($key).' ID',
-        'key' => 'oauth'.ucfirst($key),
+        'label' => 'OAuth2 '.\ucfirst($index).' ID',
+        'key' => 'oauth2'.\ucfirst($index),
         'type' => 'text',
         'default' => '',
         'required' => false,
@@ -1117,8 +1229,8 @@ foreach ($providers as $key => $provider) {
 
     $collections[Database::SYSTEM_COLLECTION_USERS]['rules'][] = [
         '$collection' => Database::SYSTEM_COLLECTION_RULES,
-        'label' => 'OAuth '.ucfirst($key).' Access Token',
-        'key' => 'oauth'.ucfirst($key).'AccessToken',
+        'label' => 'OAuth2 '.\ucfirst($index).' Access Token',
+        'key' => 'oauth2'.\ucfirst($index).'AccessToken',
         'type' => 'text',
         'default' => '',
         'required' => false,
